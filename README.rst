@@ -1,9 +1,9 @@
 ============
-vmod_example
+vmod_stendhal
 ============
 
 ----------------------
-Varnish Example Module
+Varnish Stendhal Module
 ----------------------
 
 :Date: 2015-03-03
@@ -13,12 +13,12 @@ Varnish Example Module
 SYNOPSIS
 ========
 
-import example;
+import stendhal;
 
 DESCRIPTION
 ===========
 
-Example Varnish vmod demonstrating how to write an out-of-tree Varnish vmod.
+Stendhal Varnish vmod demonstrating how to write an out-of-tree Varnish vmod.
 
 Implements the traditional Hello World as a vmod.
 
@@ -36,10 +36,10 @@ Return value
 	STRING
 Description
 	Returns "Hello, " prepended to S
-Example
+Stendhal
         ::
 
-                set resp.http.hello = example.hello("World");
+                set resp.http.hello = stendhal.hello("World");
 
 INSTALLATION
 ============
@@ -88,11 +88,11 @@ USAGE EXAMPLE
 
 In your VCL you could then use this vmod along the following lines::
 
-        import example;
+        import stendhal;
 
         sub vcl_deliver {
                 # This sets resp.http.hello to "Hello, World"
-                set resp.http.hello = example.hello("World");
+                set resp.http.hello = stendhal.hello("World");
         }
 
 COMMON PROBLEMS

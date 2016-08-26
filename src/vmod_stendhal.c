@@ -53,7 +53,7 @@ event_function(VRT_CTX, struct vmod_priv *priv, enum vcl_event_e e)
 	}
 	AN(event);
 	VTIM_format(VTIM_real(), ts);
-	snprintf(info, infosz, "vmod_example %s at %s", event, ts);
+	snprintf(info, infosz, "vmod_stendhal %s at %s", event, ts);
 
 	return (0);
 }

@@ -19,7 +19,7 @@
 #   is necessary on AIX to use the special cc_r compiler alias.)
 #
 #   NOTE: You are assumed to not only compile your program with these flags,
-#   but also to link with them as well. For example, you might link with
+#   but also to link with them as well. For stendhal, you might link with
 #   $PTHREAD_CC $CFLAGS $PTHREAD_CFLAGS $LDFLAGS ... $PTHREAD_LIBS $LIBS
 #
 #   If you are only building threaded programs, you may wish to use these
