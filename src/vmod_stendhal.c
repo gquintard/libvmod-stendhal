@@ -12,7 +12,7 @@
 
 struct node {
 	unsigned		magic;
-#define MFD_NODE_MAGIC		0xc5daec29
+#define SD_NODE_MAGIC		0xc5daec29
 	char			*idx;
 	VCL_BACKEND		be;
 	VRB_ENTRY(node)		tr;
@@ -22,7 +22,7 @@ VRB_HEAD(backend_tree, node);
 
 struct vmod_stendhal_director {
 	unsigned		magic;
-#define MFD_MAGIC		0xa99e570a
+#define SD_MAGIC		0xa99e570a
 	pthread_rwlock_t	mtx;
 	struct backend_tree	bet;
 };
@@ -45,7 +45,7 @@ vmod_director__init(VRT_CTX,
 
 	(void)ctx;
 	(void)vcl_name;
-	ALLOC_OBJ(d, MFD_MAGIC);
+	ALLOC_OBJ(d, SD_MAGIC);
 	AZ(pthread_rwlock_init(&d->mtx, NULL));
 	VRB_INIT(&d->bet);
 	*sd = d;
@@ -60,7 +60,7 @@ vmod_director__fini(struct vmod_stendhal_director **sd)
 
 	AN(sd);
 	d = *sd;
-	CHECK_OBJ_NOTNULL(d, MFD_MAGIC);
+	CHECK_OBJ_NOTNULL(d, SD_MAGIC);
 
 	for (nd = VRB_MIN(backend_tree, &d->bet);
 			nd != NULL; nd = nnd) {
@@ -78,7 +78,7 @@ vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 {
 	struct node *nd, tmp = {0};
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-	CHECK_OBJ_NOTNULL(sd, MFD_MAGIC);
+	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
 
 	/* dirty, dirty cast, but I promise, I won't hurt tmp.idx */
 	tmp.idx = (char *)(idx ? idx : "");
@@ -88,7 +88,7 @@ vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	if (nd)
 		nd->be = be;
 	else {
-		ALLOC_OBJ(nd, MFD_NODE_MAGIC);
+		ALLOC_OBJ(nd, SD_NODE_MAGIC);
 		nd->idx = strdup(tmp.idx);
 		nd->be = be;
 		VRB_INSERT(backend_tree, &sd->bet, nd);
@@ -102,7 +102,7 @@ vmod_director_remove_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 {
 	struct node *nd, tmp = {0};
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-	CHECK_OBJ_NOTNULL(sd, MFD_MAGIC);
+	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
 
 	tmp.idx = (char *)(idx ? idx : "");
 
@@ -126,7 +126,7 @@ vmod_director_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	tmp.idx = (char *)(idx ? idx : "");
 
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-	CHECK_OBJ_NOTNULL(sd, MFD_MAGIC);
+	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
 
 	pthread_rwlock_rdlock(&sd->mtx);
 	nd = VRB_FIND(backend_tree, &sd->bet, &tmp);
