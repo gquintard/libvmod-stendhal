@@ -80,7 +80,8 @@ vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(sd, MFD_MAGIC);
 
-	tmp.idx = strdup(idx ? idx : "");
+	/* dirty, dirty cast, but I promise, I won't hurt tmp.idx */
+	tmp.idx = (char *)(idx ? idx : "");
 
 	pthread_rwlock_wrlock(&sd->mtx);
 	nd = VRB_FIND(backend_tree, &sd->bet, &tmp);
@@ -88,14 +89,11 @@ vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		nd->be = be;
 	} else {
 		ALLOC_OBJ(nd, MFD_NODE_MAGIC);
-		nd->idx = tmp.idx;
-		tmp.idx = NULL;
+		nd->idx = strdup(tmp.idx);
 		nd->be = be;
 		VRB_INSERT(backend_tree, &sd->bet, nd);
 	}
 	pthread_rwlock_unlock(&sd->mtx);
-
-	free(tmp.idx);
 }
 
 VCL_VOID __match_proto__()
@@ -106,7 +104,7 @@ vmod_director_remove_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(sd, MFD_MAGIC);
 
-	tmp.idx = strdup(idx ? idx : "");
+	tmp.idx = (char *)(idx ? idx : "");
 
 	pthread_rwlock_wrlock(&sd->mtx);
 	nd = VRB_FIND(backend_tree, &sd->bet, &tmp);
@@ -116,8 +114,6 @@ vmod_director_remove_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		free(nd);
 	}
 	pthread_rwlock_unlock(&sd->mtx);
-
-	free(tmp.idx);
 }
 
 VCL_BACKEND __match_proto__()
@@ -127,7 +123,7 @@ vmod_director_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	VCL_BACKEND be = NULL;
 	struct node *nd, tmp = {0};
 
-	tmp.idx = strdup(idx ? idx : "");
+	tmp.idx = (char *)(idx ? idx : "");
 
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(sd, MFD_MAGIC);
@@ -137,6 +133,5 @@ vmod_director_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		be = nd->be;
 	pthread_rwlock_unlock(&sd->mtx);
 
-	free(tmp.idx);
 	return (be);
 }
