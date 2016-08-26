@@ -4,7 +4,7 @@
 # (vmodtool requires this format.)
 #
 
-$Module stendhal 3 Stendhal VMOD
+$Module stendhal 3 Example VMOD
 
 DESCRIPTION
 ===========
@@ -18,15 +18,13 @@ You can even have links and lists in here:
 * https://github.com/varnish/libvmod-stendhal/
 * https://www.varnish-cache.org/
 
-The init-function declared next does not have documentation.
+$Object director()
 
-$Event event_function
-$Function STRING info()
+$Method BACKEND .backend(STRING)
 
-Returns a string set by the last VCL event, demonstrating the use of
-event functions.
+$Method VOID .add_backend(STRING, BACKEND)
 
-$Function STRING hello(STRING)
+$Method VOID .remove_backend(STRING)
 
 The different functions provided by the VMOD should also have their own
 embedded documentation. This section is for the hello() function.
