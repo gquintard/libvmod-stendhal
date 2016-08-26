@@ -1,0 +1,40 @@
+varnishtest "Test stendhal vmod"
+
+server s1 {
+	rxreq
+	txresp
+	rxreq
+	txresp
+	rxreq
+	txresp
+} -start
+
+varnish v1 -vcl+backend {
+	import stendhal from "${vmod_topbuild}/src/.libs/libvmod_stendhal.so";
+
+	sub vcl_init {
+		new smf = stendhal.director();
+		smf.add_backend("foo", s1);
+	}
+
+	sub vcl_recv {
+		set req.backend_hint = smf.backend("foo");
+	}
+	sub vcl_deliver {
+		smf.remove_backend("foo");
+	}
+} -start
+
+client c1 {
+	txreq -url "/foo"
+	rxresp
+	expect resp.status == 200
+
+	txreq -url "/bar"
+	rxresp
+	expect resp.status == 503
+
+	txreq -url "/baz"
+	rxresp
+	expect resp.status == 503
+} -run
