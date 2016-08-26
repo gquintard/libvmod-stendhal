@@ -85,9 +85,9 @@ vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 
 	pthread_rwlock_wrlock(&sd->mtx);
 	nd = VRB_FIND(backend_tree, &sd->bet, &tmp);
-	if (nd) {
+	if (nd)
 		nd->be = be;
-	} else {
+	else {
 		ALLOC_OBJ(nd, MFD_NODE_MAGIC);
 		nd->idx = strdup(tmp.idx);
 		nd->be = be;
@@ -127,6 +127,7 @@ vmod_director_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(sd, MFD_MAGIC);
+
 	pthread_rwlock_rdlock(&sd->mtx);
 	nd = VRB_FIND(backend_tree, &sd->bet, &tmp);
 	if (nd)
