@@ -13,15 +13,15 @@ varnish v1 -vcl+backend {
 	import stendhal from "${vmod_topbuild}/src/.libs/libvmod_stendhal.so";
 
 	sub vcl_init {
-		new smf = stendhal.director();
-		smf.add_backend("foo", s1);
+		new sd = stendhal.director();
+		sd.add_backend("foo", s1);
 	}
 
 	sub vcl_recv {
-		set req.backend_hint = smf.backend("foo");
+		set req.backend_hint = sd.backend("foo");
 	}
 	sub vcl_deliver {
-		smf.remove_backend("foo");
+		sd.remove_backend("foo");
 	}
 } -start
 

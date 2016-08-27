@@ -22,14 +22,14 @@ varnish v1 -vcl+backend {
 	import stendhal from "${vmod_topbuild}/src/.libs/libvmod_stendhal.so";
 
 	sub vcl_init {
-		new smf = stendhal.director();
-		smf.add_backend("/s1", s1);
-		smf.add_backend("/s2", s2);
-		smf.add_backend("/s3", s3);
+		new sd = stendhal.director();
+		sd.add_backend("/s1", s1);
+		sd.add_backend("/s2", s2);
+		sd.add_backend("/s3", s3);
 	}
 
 	sub vcl_recv {
-		set req.backend_hint = smf.backend(req.url);
+		set req.backend_hint = sd.backend(req.url);
 	}
 } -start
 
