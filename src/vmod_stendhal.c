@@ -46,6 +46,7 @@ vmod_director__init(VRT_CTX,
 	(void)ctx;
 	(void)vcl_name;
 	ALLOC_OBJ(d, SD_MAGIC);
+	AN(d);
 	AZ(pthread_rwlock_init(&d->mtx, NULL));
 	VRB_INIT(&d->bet);
 	*sd = d;
@@ -98,6 +99,7 @@ vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		nd->be = be;
 	else {
 		ALLOC_OBJ(nd, SD_NODE_MAGIC);
+		AN(nd);
 		nd->idx = tmp.idx;
 		tmp.idx = NULL;
 		nd->be = be;
