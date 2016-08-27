@@ -76,7 +76,7 @@ VCL_VOID __match_proto__()
 vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		VCL_STRING idx, const VCL_BACKEND be)
 {
-	struct node *nd, tmp = {0};
+	struct node *nd, tmp;
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
 
@@ -102,7 +102,7 @@ VCL_VOID __match_proto__()
 vmod_director_remove_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		VCL_STRING idx)
 {
-	struct node *nd, tmp = {0};
+	struct node *nd, tmp;
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
 
@@ -124,7 +124,7 @@ static VCL_BACKEND
 find_backend(struct vmod_stendhal_director *sd, VCL_STRING idx)
 {
 	VCL_BACKEND be = NULL;
-	struct node *nd, tmp = {0};
+	struct node *nd, tmp;
 
 	tmp.idx = strdup(idx ? idx : "");
 
