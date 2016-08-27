@@ -1,45 +1,37 @@
-============
-vmod_stendhal
-============
-
 ----------------------
 Varnish Stendhal Module
 ----------------------
 
-:Date: 2015-03-03
-:Version: 1.0
-:Manual section: 3
-
-SYNOPSIS
-========
-
-import stendhal;
-
 DESCRIPTION
 ===========
 
-Stendhal Varnish vmod demonstrating how to write an out-of-tree Varnish vmod.
+``vmod_stendhal`` offers a director to store backends (and other directors)
+inside a red-black tree, allowing to retrieved them using a string.
 
-Implements the traditional Hello World as a vmod.
+An basic example could be::
 
-FUNCTIONS
-=========
+ import stendhal;
 
-hello
------
+ backend foo_be { .host = "127.0.0.1" }
+ backend bar_be { .host = "127.0.0.2" }
 
-Prototype
-        ::
+ sub vcl_init {
+   # create the director
+   new sd = stendhal.director();
 
-                hello(STRING S)
-Return value
-	STRING
-Description
-	Returns "Hello, " prepended to S
-Stendhal
-        ::
+   # add the backends
+   sd.add_backend("foo.example.com", foo_be);
+   sd.add_backend("bar.example.com", bar_be);
+ }
 
-                set resp.http.hello = stendhal.hello("World");
+ # use it!
+ sub vcl_recv {
+   if (!sd.contains(req.http.host)) {
+     return(synth(404));
+   } else {
+     set req.backend_hint = sd.backend(req.http.host);
+   }
+ }
 
 INSTALLATION
 ============
@@ -71,6 +63,7 @@ Make targets:
 * make check - runs the unit tests in ``src/tests/*.vtc``
 * make distcheck - run check and prepare a tarball of the vmod.
 
+
 Installation directories
 ------------------------
 
@@ -83,17 +76,6 @@ Other files like man-pages and documentation are installed in the
 locations determined by ``configure``, which inherits its default
 ``--prefix`` setting from Varnish.
 
-USAGE EXAMPLE
-=============
-
-In your VCL you could then use this vmod along the following lines::
-
-        import stendhal;
-
-        sub vcl_deliver {
-                # This sets resp.http.hello to "Hello, World"
-                set resp.http.hello = stendhal.hello("World");
-        }
 
 COMMON PROBLEMS
 ===============
@@ -102,9 +84,3 @@ COMMON PROBLEMS
 
   Check if ``PKG_CONFIG_PATH`` has been set correctly before calling
   ``autogen.sh`` and ``configure``
-
-* Incompatibilities with different Varnish Cache versions
-
-  Make sure you build this vmod against its correspondent Varnish Cache version.
-  For instance, to build against Varnish Cache 4.0, this vmod must be built from
-  branch 4.0.
