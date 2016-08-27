@@ -120,11 +120,15 @@ vmod_director_remove_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	free(tmp.idx);
 }
 
-static VCL_BACKEND
-find_backend(struct vmod_stendhal_director *sd, VCL_STRING idx)
+VCL_BACKEND __match_proto__()
+vmod_director_backend(VRT_CTX, struct vmod_stendhal_director *sd,
+		VCL_STRING idx)
 {
 	VCL_BACKEND be = NULL;
 	struct node *nd, tmp;
+
+	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
+	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 
 	tmp.idx = strdup(idx ? idx : "");
 
@@ -135,23 +139,13 @@ find_backend(struct vmod_stendhal_director *sd, VCL_STRING idx)
 	pthread_rwlock_unlock(&sd->mtx);
 
 	free(tmp.idx);
-	return (be);
-}
 
-VCL_BACKEND __match_proto__()
-vmod_director_backend(VRT_CTX, struct vmod_stendhal_director *sd,
-		VCL_STRING idx)
-{
-	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
-	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-	return (find_backend(sd, idx));
+	return (be);
 }
 
 VCL_BOOL __match_proto__()
 vmod_director_contains(VRT_CTX, struct vmod_stendhal_director *sd,
 		VCL_STRING idx)
 {
-	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
-	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
-	return (find_backend(sd, idx) != NULL);
+	return (vmod_director_backend(ctx, sd, idx) != NULL);
 }
