@@ -66,6 +66,16 @@ Description
 Example
 	set req.backend_hint = sd.backend("foo");
 
+$Method BOOL .contains(STRING s)
+
+Description
+	Differentiate between an empty slot and a slot with a sick backend,
+	returning ``true`` if a backend exists for key ``s``, and ``false``
+	otherwise.
+
+Example
+	if (!sd.contains("foo")) { return (synth(404)); }
+
 $Method VOID .remove_backend(STRING s)
 
 Description
