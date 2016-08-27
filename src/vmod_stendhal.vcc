@@ -1,30 +1,88 @@
+#-
+# Copyright (c) 2016 Guillaume Quintard
 #
-# Copyright YOU (c) 1900.
+# Author: Guillaume Quintard <guillaume.quintard@gmail.com>
 #
-# (vmodtool requires this format.)
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
 #
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL AUTHOR OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
 
 $Module stendhal 3 Example VMOD
 
 DESCRIPTION
 ===========
 
-This is the embedded documentation for the stendhal VMOD. It should
-mention what the vmod is intended to do.
+`vmod_stendhal` creates backend hashmaps using strings as keys.
 
-It can span multiple lines and is written in RST format.
-You can even have links and lists in here:
-
-* https://github.com/varnish/libvmod-stendhal/
-* https://www.varnish-cache.org/
+All functions/methods can be used by any vcl subroutine.
 
 $Object director()
 
-$Method BACKEND .backend(STRING)
+Description
+	Create a director to store your backends. You can of course create
+	multiple directors, each being its own store, isolated from the others.
 
-$Method VOID .add_backend(STRING, BACKEND)
+Example
+	new sd = stendhal.director();
 
-$Method VOID .remove_backend(STRING)
+$Method VOID .add_backend(STRING s, BACKEND be)
 
-The different functions provided by the VMOD should also have their own
-embedded documentation. This section is for the hello() function.
+Description
+	Add backend ``be`` to the director, using ``s`` as index. If ``s`` is
+	already used, the present backend will be overwritten by ``be``.
+	Backends can be added multiples to respond to more than one key.
+
+Example
+	sd.add_backend(backend1, "foo");
+
+	sd.add_backend(backend1, "bar");
+
+	sd.add_backend(backend2, "baz");
+
+
+$Method BACKEND .backend(STRING s)
+
+Description
+	Retrieve the backend stored for index ``s``. It can return a null
+	backend.
+
+Example
+	set req.backend_hint = sd.backend("foo");
+
+$Method VOID .remove_backend(STRING s)
+
+Description
+	Remove the backend, if any, indexed by ``s``.
+
+Example
+	sd.remove_backend("foo");
+
+SEE ALSO
+========
+
+``vcl``\(7),
+
+COPYRIGHT
+=========
+
+This document is licensed under the same licence as vmod_named itself. See
+LICENCE for details.
+
+Copyright (c) 2016 Guillaume Quintard
