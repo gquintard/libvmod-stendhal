@@ -1,4 +1,24 @@
-AM_CPPFLAGS = @VMOD_INCLUDES@ -Wall -Werror
+AM_CPPFLAGS = @VMOD_INCLUDES@ \
+	-Wall \
+	-Werror \
+	-Werror \
+	-Wall \
+	-Wno-format-y2k \
+	-W \
+	-Wstrict-prototypes \
+	-Wmissing-prototypes \
+	-Wpointer-arith \
+	-Wreturn-type \
+	-Wcast-qual \
+	-Wwrite-strings \
+	-Wswitch \
+	-Wshadow \
+	-Wunused-parameter \
+	-Wcast-align \
+	-Wchar-subscripts \
+	-Wnested-externs \
+	-Wextra \
+	-Wno-sign-compare
 
 TESTS_ENVIRONMENT = PATH=$(LIBVARNISHAPI_BINDIR):$(LIBVARNISHAPI_SBINDIR):$$PATH
 
