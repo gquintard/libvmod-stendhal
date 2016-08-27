@@ -72,6 +72,19 @@ vmod_director__fini(struct vmod_stendhal_director **sd)
 	AZ(pthread_rwlock_destroy(&d->mtx));
 }
 
+#define LOCK_FIND(sd, tmp, idx, type) \
+	do {			\
+		tmp.idx = strdup(idx ? idx : "");	\
+		pthread_rwlock_## type ## lock(&sd->mtx);	\
+		nd = VRB_FIND(backend_tree, &sd->bet, &tmp);\
+	} while (0)
+
+#define UNLOCK_FREE(sd, tmp)\
+	do {			\
+		pthread_rwlock_unlock(&sd->mtx);\
+		free(tmp.idx);\
+	} while (0)
+
 VCL_VOID __match_proto__()
 vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		VCL_STRING idx, const VCL_BACKEND be)
@@ -80,10 +93,7 @@ vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
 
-	tmp.idx = strdup(idx ? idx : "");
-
-	pthread_rwlock_wrlock(&sd->mtx);
-	nd = VRB_FIND(backend_tree, &sd->bet, &tmp);
+	LOCK_FIND(sd, tmp, idx, wr);
 	if (nd)
 		nd->be = be;
 	else {
@@ -93,9 +103,7 @@ vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		nd->be = be;
 		VRB_INSERT(backend_tree, &sd->bet, nd);
 	}
-	pthread_rwlock_unlock(&sd->mtx);
-
-	free(tmp.idx);
+	UNLOCK_FREE(sd, tmp);
 }
 
 VCL_VOID __match_proto__()
@@ -106,18 +114,13 @@ vmod_director_remove_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
 
-	tmp.idx = strdup(idx ? idx : "");
-
-	pthread_rwlock_wrlock(&sd->mtx);
-	nd = VRB_FIND(backend_tree, &sd->bet, &tmp);
+	LOCK_FIND(sd, tmp, idx, wr);
 	if (nd) { 
 		VRB_REMOVE(backend_tree, &sd->bet, nd);
 		free(nd->idx);
 		free(nd);
 	}
-	pthread_rwlock_unlock(&sd->mtx);
-
-	free(tmp.idx);
+	UNLOCK_FREE(sd, tmp);
 }
 
 VCL_BACKEND __match_proto__()
@@ -130,15 +133,10 @@ vmod_director_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	CHECK_OBJ_NOTNULL(sd, SD_MAGIC);
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 
-	tmp.idx = strdup(idx ? idx : "");
-
-	pthread_rwlock_rdlock(&sd->mtx);
-	nd = VRB_FIND(backend_tree, &sd->bet, &tmp);
+	LOCK_FIND(sd, tmp, idx, rd);
 	if (nd)
 		be = nd->be;
-	pthread_rwlock_unlock(&sd->mtx);
-
-	free(tmp.idx);
+	UNLOCK_FREE(sd, tmp);
 
 	return (be);
 }
