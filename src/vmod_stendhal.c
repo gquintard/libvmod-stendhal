@@ -31,9 +31,9 @@
 
 #include <vcl.h>
 #include <vrt.h>
-#include <vtree.h>
 #include <cache/cache.h>
 
+#include "vtree.h"
 #include "vcc_if.h"
 
 struct node {
