@@ -29,9 +29,11 @@
 #include <string.h>
 #include <pthread.h>
 
-#include <vcl.h>
+#include <vdef.h>
 #include <vrt.h>
-#include <cache/cache.h>
+#include <vcl.h>
+#include <vas.h>
+#include <miniobj.h>
 
 #include "vtree.h"
 #include "vcc_if.h"
@@ -53,7 +55,7 @@ struct vmod_stendhal_director {
 	struct backend_tree	bet;
 };
 
-inline int
+inline static int
 cmp_idx(const struct node *a, const struct node *b)
 {
 	return (strcmp(a->idx, b->idx));
@@ -62,7 +64,7 @@ cmp_idx(const struct node *a, const struct node *b)
 VRB_PROTOTYPE_STATIC(backend_tree, node, tr, cmp_idx);
 VRB_GENERATE_STATIC(backend_tree, node, tr, cmp_idx);
 
-VCL_VOID __match_proto__()
+VCL_VOID v_matchproto_()
 vmod_director__init(VRT_CTX,
     struct vmod_stendhal_director **sd,
     const char *vcl_name)
@@ -79,7 +81,7 @@ vmod_director__init(VRT_CTX,
 }
 
 
-VCL_VOID __match_proto__()
+VCL_VOID v_matchproto_()
 vmod_director__fini(struct vmod_stendhal_director **sd)
 {
 	struct node *nd, *nnd;
@@ -112,7 +114,7 @@ vmod_director__fini(struct vmod_stendhal_director **sd)
 		free(tmp.idx);\
 	} while (0)
 
-VCL_VOID __match_proto__()
+VCL_VOID v_matchproto_()
 vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		VCL_STRING idx, const VCL_BACKEND be)
 {
@@ -134,7 +136,7 @@ vmod_director_add_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	UNLOCK_FREE(sd, tmp);
 }
 
-VCL_VOID __match_proto__()
+VCL_VOID v_matchproto_()
 vmod_director_remove_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		VCL_STRING idx)
 {
@@ -151,7 +153,7 @@ vmod_director_remove_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	UNLOCK_FREE(sd, tmp);
 }
 
-VCL_BACKEND __match_proto__()
+VCL_BACKEND v_matchproto_()
 vmod_director_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 		VCL_STRING idx)
 {
@@ -169,7 +171,7 @@ vmod_director_backend(VRT_CTX, struct vmod_stendhal_director *sd,
 	return (be);
 }
 
-VCL_BOOL __match_proto__()
+VCL_BOOL v_matchproto_()
 vmod_director_contains(VRT_CTX, struct vmod_stendhal_director *sd,
 		VCL_STRING idx)
 {
